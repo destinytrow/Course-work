@@ -7,27 +7,30 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class SongService {
- public List<Song> selectAll(List<Song> targetList, DatabaseConnection database) {
-     PreparedStatement statement = database.newStatement("SELECT * FROM Songs");
+public class SongService {
+    public List<Song> selectAll(DatabaseConnection database)
+    {
+        PreparedStatement statement = database.newStatement("SELECT * FROM Songs");
+        final List<Song> allTheSongs = new ArrayList<>();
 
-     try {
-         if (statement != null) {
+        try {
+            if (statement != null) {
 
-             ResultSet results = database.executeQuery(statement);
+                ResultSet results = database.executeQuery(statement);
 
-             if (results != null) {
-                 while (results.next()) {
-                     targetList.add(new Song(results.getInt("SongID"), results.getString("Title"), results.getString("Artist"), results.getInt("Duration"), results.getInt("AlbumID")));
-                     }
-             }
-         }
-         return targetList;
-     } catch (SQLException resultsException) {
-         System.out.println("Database select all error: " + resultsException.getMessage());
-     }
+                if (results != null) {
+                    while (results.next()) {
+                        allTheSongs.add(new Song(results.getInt("SongID"), results.getString("Title"), results.getString("Artist"), results.getInt("Duration"), results.getInt("AlbumID")));
+                    }
+                }
+            }
+            return allTheSongs;
+        } catch (SQLException resultsException) {
+            System.out.println("Database select all error: " + resultsException.getMessage());
+            return null;
+        }
 
- }
+    }
 }
 //
 //    }	public static Songs selectById(int songID, DatabaseConnection database) {return null; }

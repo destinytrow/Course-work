@@ -1,5 +1,6 @@
 package Model;
 
+import Model.Playlist.Playlist;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.sql.Connection;
@@ -7,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 
 public class DatabaseConnection {
 
@@ -58,10 +60,14 @@ public class DatabaseConnection {
         }
     }
 
-    public ResultSet executeQuery(String query) throws SQLException
+    public ResultSet executeQuery(String query)
     {
-        final PreparedStatement statement = connection.prepareStatement(query);
-        return statement.executeQuery();
+        final PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            return statement.executeQuery();
+        } catch (SQLException e) { return null; }
+
     }
 
 
@@ -86,6 +92,25 @@ public class DatabaseConnection {
         {
             System.out.println("Database disconnection error: " + exception.getMessage());
         }
+    }
+
+    public ArrayList<Playlist> allPlaylists()
+    {
+        final ArrayList<Playlist> playlists = new ArrayList<>();
+        final ResultSet resultSet = executeQuery("SELECT * FROM Playlists");
+        try
+        {
+            while (resultSet.next())
+            {
+                final Playlist playlist = new Playlist(
+                        resultSet.getInt("PlaylistID"),
+                        resultSet.getString("Name"),
+                        resultSet.getString("description")
+                );
+                playlists.add(playlist);
+            }
+        } catch (Exception e) { e.printStackTrace(); return null;  }
+        return playlists;
     }
 
 }
