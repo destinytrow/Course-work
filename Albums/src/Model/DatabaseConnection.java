@@ -1,6 +1,8 @@
 package Model;
 
+import Model.Albums.Album;
 import Model.Playlist.Playlist;
+import Model.songs.Song;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.sql.Connection;
@@ -111,6 +113,85 @@ public class DatabaseConnection {
             }
         } catch (Exception e) { e.printStackTrace(); return null;  }
         return playlists;
+    }
+
+    public ArrayList<Album> allAlbums()
+    {
+        final ArrayList<Album> albums = new ArrayList<>();
+        final ResultSet resultSet = executeQuery("SELECT * FROM Albums");
+        try
+        {
+            while (resultSet.next())
+            {
+                final Album album = new Album(
+                        resultSet.getInt("AlbumID"),
+                        resultSet.getString("Name")
+                );
+                albums.add(album);
+            }
+        } catch (Exception e) { e.printStackTrace(); return null;  }
+        return albums;
+    }
+
+    public ArrayList<Song> songsInPlaylist(Playlist playlist)
+    {
+        final String query = "SELECT Songs.* FROM Songs JOIN PlaylistsContent ON Songs.SongID = PlaylistsContent.SongID WHERE PlaylistsContent.PlaylistID = " + playlist.getPlayistID() + ";";
+        final ResultSet resultLines = executeQuery(query);
+        final ArrayList<Song> songs = new ArrayList<>();
+        try
+        {
+            while (resultLines.next())
+            {
+                Song newSong = new Song(
+                        resultLines.getInt("SongID"),
+                        resultLines.getString("Title"),
+                        resultLines.getString("Artist"),
+                        resultLines.getInt("Duration"),
+                        resultLines.getInt("AlbumID")
+                );
+                songs.add(newSong);
+            }
+        } catch (Exception e) { e.printStackTrace(); return null; }
+        return songs;
+    }
+
+    public ArrayList<Song> songsInAlbum(Album album)
+    {
+        final String query = "SELECT Songs.* FROM Songs JOIN Albums ON Songs.SongID = Albums.AlbumID WHERE Albums.AlbumID = " + album.getAlbumID() + ";";
+        final ResultSet resultLines = executeQuery(query);
+        final ArrayList<Song> songs = new ArrayList<>();
+        try
+        {
+            while (resultLines.next())
+            {
+                Song newSong = new Song(
+                        resultLines.getInt("SongID"),
+                        resultLines.getString("Title"),
+                        resultLines.getString("Artist"),
+                        resultLines.getInt("Duration"),
+                        resultLines.getInt("AlbumID")
+                );
+                songs.add(newSong);
+            }
+        } catch (Exception e) { e.printStackTrace(); return null; }
+        return songs;
+    }
+
+    public Album albumFromName(String albumName)
+    {
+        for (Album album : allAlbums())
+        {
+            if (album.getName().equals(albumName)) return album;
+        }
+        return null;
+    }
+    public Playlist playlistFromName(String playlistName)
+    {
+        for (Playlist playlist : allPlaylists())
+        {
+            if (playlist.getName().equals(playlistName)) return playlist;
+        }
+        return null;
     }
 
 }

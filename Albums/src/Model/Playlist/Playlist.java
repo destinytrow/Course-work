@@ -10,6 +10,8 @@ public class Playlist
         return name;
     }
 
+    public int getPlayistID() { return playistID; }
+
     public Playlist(int playistID, String name, String description)
     {
         this.playistID = playistID;
