@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
-public class DatabaseConnection {
+public class DatabaseConnection
+{
 
     private Connection connection = null;
 
@@ -157,7 +158,7 @@ public class DatabaseConnection {
 
     public ArrayList<Song> songsInAlbum(Album album)
     {
-        final String query = "SELECT Songs.* FROM Songs JOIN Albums ON Songs.SongID = Albums.AlbumID WHERE Albums.AlbumID = " + album.getAlbumID() + ";";
+        final String query = "SELECT Songs.* FROM Songs JOIN Albums ON Songs.albumID = Albums.AlbumID WHERE Albums.AlbumID = " + album.getAlbumID() + ";";
         final ResultSet resultLines = executeQuery(query);
         final ArrayList<Song> songs = new ArrayList<>();
         try
@@ -185,6 +186,28 @@ public class DatabaseConnection {
         }
         return null;
     }
+
+    public ArrayList<Song> getAllSongs()
+    {
+        ArrayList<Song> allSongs = new ArrayList<>();
+        final ResultSet resultSet = executeQuery("SELECT * FROM Songs;");
+        try
+        {
+            while (resultSet.next())
+            {
+                Song newSong = new Song(
+                        resultSet.getInt("SongID"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Artist"),
+                        resultSet.getInt("Duration"),
+                        resultSet.getInt("AlbumID")
+                );
+                allSongs.add(newSong);
+            }
+        } catch (Exception e) { e.printStackTrace(); return null; }
+        return allSongs;
+    }
+
     public Playlist playlistFromName(String playlistName)
     {
         for (Playlist playlist : allPlaylists())

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongService {
-    public List<Song> selectAll(DatabaseConnection database)
+    public List<Song> getAllSongs(DatabaseConnection database)
     {
         PreparedStatement statement = database.newStatement("SELECT * FROM Songs");
         final List<Song> allTheSongs = new ArrayList<>();
@@ -39,10 +39,10 @@ public class SongService {
 ////    {
 ////        //final DatabaseConnection dbConn = new DatabaseConnection();
 ////        final ResultSet results = dbConn.executeQuery("SELECT * FROM Songs");
-////        final ArrayList<Song> allSongs = new ArrayList<>();
+////        final ArrayList<Song> getAllSongs = new ArrayList<>();
 ////        while (results.next())
 ////        {
-////            //allSongs.add()   //STEVE COMMENTED OUT THIS LINE
+////            //getAllSongs.add()   //STEVE COMMENTED OUT THIS LINE
 ////        }
 ////        return null;        //STEVE ADDED THIS LINE, REMOVE IT WHEN YOU'RE READY
 ////    }

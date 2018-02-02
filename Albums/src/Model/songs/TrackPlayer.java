@@ -4,36 +4,69 @@ import Model.DatabaseConnection;
 import Model.Playlist.Playlist;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class TrackPlayer
 {
-    private static ArrayList<MediaPlayer> queue = new ArrayList<>();
-    private static int songIndex = 0;
-    private static boolean isPlaying = false;
+    private ArrayList<MediaPlayer> queue = new ArrayList<>();
+    private int songIndex = 0;
+    private boolean isPlaying = false;
+
+    public TrackPlayer()
+    {
+        final DatabaseConnection dbConn = new DatabaseConnection("MusicPlayer.db");
+        queueFromSongs(dbConn.getAllSongs());
+        dbConn.disconnect();
+    }
+
+    public void loadPlaylist(Playlist playlist)
+    {
+        final DatabaseConnection dbConn = new DatabaseConnection("MusicPlayer.db");
+        queueFromSongs(dbConn.songsInPlaylist(playlist));
+        dbConn.disconnect();
+    }
 
     public TrackPlayer(Playlist playlist)
     {
-        final DatabaseConnection dbConn = new DatabaseConnection("MusicPlayer.db");
-        for (Song song : dbConn.songsInPlaylist(playlist))
+        loadPlaylist(playlist);
+    }
+
+    private void queueFromSongs(ArrayList<Song> songs)
+    {
+        for (Song song : songs)
         {
-            final Media media = new Media("U:\\computer science\\coursework\\Albums\\Songs\\" + song.getTitle() + ".mp3");
+            URL url;
+            try { url = new File("U:/computer science/coursework/Albums/Songs/" + song.getTitle() + ".mp3").toURI().toURL(); }
+            catch (Exception e) { e.printStackTrace(); return; }
+            final Media media = new Media(url.toString());
             final MediaPlayer mediaPlayer = new MediaPlayer(media);
             queue.add(mediaPlayer);
         }
     }
 
-    public static void play()
+    public void play()
     {
         if (!isPlaying) queue.get(songIndex).play();
         isPlaying = true;
+        System.out.println("playinggg");
     }
 
-    public static void pause()
+    public void pause()
     {
         if (isPlaying) queue.get(songIndex).pause();
         isPlaying = false;
+        System.out.println("Pausinggg");
+    }
+
+    public void togglePlayPause()
+    {
+        if (isPlaying) pause();
+        else play();
+
     }
 
 
