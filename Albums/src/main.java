@@ -15,10 +15,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import javafx.scene.input.MouseEvent;
-
 import java.util.ArrayList;
+
 public class main {
 
 
@@ -115,6 +114,7 @@ public class main {
         songName.setCellValueFactory(new PropertyValueFactory<Song, String>("Title"));
         mainTable.getColumns().add(songName);
 
+
         artistName = new TableColumn("Artist");
         artistName.setCellValueFactory(new PropertyValueFactory<Song, String>("Artist"));
         mainTable.getColumns().add(artistName);
@@ -123,7 +123,6 @@ public class main {
         durationSeconds.setCellValueFactory(new PropertyValueFactory<Song, String>("Duration"));
         mainTable.getColumns().add(durationSeconds);
         mainTable.setItems(tableData);
-
         mainTable.setOnMousePressed((MouseEvent e)-> {
             if (e.getClickCount() == 2 &&  mainTable.getSelectionModel().getSelectedItem() != null){
                 System.out.println("played");
@@ -138,23 +137,33 @@ public class main {
         searchBox.setPromptText("search");
 
         final TableView<Song> tableVersionWithEverythingInIt = new TableView<>();
+        BooleanWrapper found = new BooleanWrapper(false);
         tableVersionWithEverythingInIt.getItems().addAll(songService.getAllSongs(connection));
         searchBox.textProperty().addListener((a, b, searchText) -> {
             if (!searchText.isEmpty()) // if theyve actually typed in something
             {
-                System.out.println("hey");
                 mainTable.getItems().clear();
                 for (Song song : tableVersionWithEverythingInIt.getItems())
                 {
-                    System.out.println("hi");
-                    if (song.getTitle().toLowerCase().contains(searchText) || song.getArtist().toLowerCase().contains(searchText)) mainTable.getItems().add(song);
+                    if (song.getTitle().toLowerCase().contains(searchText) || song.getArtist().toLowerCase().contains(searchText))
+                    {
+                        mainTable.getItems().add(song);
+                        found.set(true);
+                    }
                 }
+                if (found.get()) {
+                    System.out.println("Found!");
+                    found.set(false);
+                }
+                else{ System.out.println("Not found!"); }
             }
+
             else
             {
                 for (Song song : tableVersionWithEverythingInIt.getItems()) mainTable.getItems().add(song);
             } // resetting it
         });
+
 
         HBox boxOfButtons = new HBox(10);
 

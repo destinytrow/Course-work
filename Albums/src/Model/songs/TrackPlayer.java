@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class TrackPlayer
 {
     private ArrayList<MediaPlayer> queue = new ArrayList<>();
-    private int songIndex = 0;
+    public int songIndex = 0;
     private boolean isPlaying = false;
 
     public TrackPlayer()
@@ -35,12 +35,12 @@ public class TrackPlayer
         loadPlaylist(playlist);
     }
 
-    private void queueFromSongs(ArrayList<Song> songs)
+    public void queueFromSongs(ArrayList<Song> songs)
     {
         for (Song song : songs)
         {
             URL url;
-            try { url = new File("U:/computer science/coursework/Albums/Songs/" + song.getTitle() + ".mp3").toURI().toURL(); }
+            try { url = new File("U:/computer science/coursework/Albums/Songs/" + song.getTitle() + ".mp3").toURI().toURL(); } // we need to add a bit that changes what the song index is. this could be done on the main tables clicking bit, on action. but i dont know how 
             catch (Exception e) { e.printStackTrace(); return; }
             final Media media = new Media(url.toString());
             final MediaPlayer mediaPlayer = new MediaPlayer(media);
